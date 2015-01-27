@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Metube</title>
+    <link rel="stylesheet" href="/css/metube.css">
+    <link href='http://fonts.googleapis.com/css?family=Sigmar+One' rel='stylesheet' type='text/css'>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <div class= "menu">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/videos">Videos</a></li>
+                    <li><a href="/videos/new">New video</a></li>
+                    <% @genres.each do |group| %>
+                    <li>
+                        <a href="/videos/genre/<%= group["genre"] %>">
+                          <%= group["genre"] %>
+                        </a>
+                    </li>
+                    <% end %>
+                </ul>
+
+                
+            </div>
+        </nav>
+        <%= yield %>
+    </div>
+    
+</body>
+</html>

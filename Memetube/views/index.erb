@@ -1,0 +1,12 @@
+<h1>Video list</h1>
+<div class="video_list">
+    <ul>
+      <% @videos.each do |v| %>
+        <li>
+          <a href="/videos/<%= v["id"] %>">
+            <%= v["title"] %>
+          </a>
+        </li>
+      <% end %>
+    </ul>
+</div>

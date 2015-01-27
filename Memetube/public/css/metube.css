@@ -1,0 +1,95 @@
+body {
+    background-color:rgb(133,133,133);
+}
+
+h1 {
+    color: rgb(85 128 218);
+    text-align: center;
+    text-shadow:1px 1px 0 yellow;
+}
+
+h2 {
+    color: rgb(85 128 218);
+    text-align: center;
+    text-shadow:1px 1px 0 yellow;
+}
+
+p {
+    max-width: 800px;
+    margin: auto;
+    font-size: 20px;
+     color: rgb(85 128 218);
+    font-weight: bold;
+    text-shadow:1px 1px 0 yellow;
+}
+
+a {
+    text-decoration: none;
+    color: rgb(247, 82, 82);
+    font-size: 21px;
+}
+
+li {
+    padding-top: 1em;
+}
+
+form {
+    margin-left: 44px;
+    font-size: 17px;
+    color: rgb(129, 134, 223);
+    font-weight: bold;
+    text-shadow:1px 1px 0 black;
+}
+
+iframe {
+    margin-left: 20%;
+}
+.menu {
+    background-color: rgba(91, 124,213, 0.5);
+    margin-top: -16px;
+    border-radius: 1em;
+    height: 45px;
+}
+.container {
+    max-width: 960px;
+    height: 500px;
+    margin: auto;
+    border: 2px solid rgb(131,115,128);
+    border-radius: 1em;
+    background-image: url("http://www.thesaleslion.com/wp-content/uploads/2013/03/video.jpg");
+    background-size: cover;
+}
+
+.video_list {
+    width: 350px;
+    max-height: 200px;
+    margin: auto;
+    background-color: rgba(178, 47, 47, 0.2);
+}
+
+.controls{
+    width: 150px;
+    max-height: 50px;
+    margin: auto;
+    background-color: rgba(178, 47, 47, 0.2);
+}
+
+.controls a {
+    padding: 0.5em;
+    margin-left: 5px;
+}
+
+nav ul {
+    margin-left: 30px;
+}
+
+nav li {
+    display: inline-block;
+}
+
+nav a {
+    text-decoration: none;
+    padding-right: 1em;
+    color:rgba(37, 11, 202, 0.8);
+    font-family: 'Sigmar One', cursive;
+}
