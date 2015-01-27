@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'sqlite3'
+require 'youtube_addy'
 
 require 'pry'
 
@@ -30,7 +31,7 @@ get '/videos/:id' do
   id = params[:id]
   @video = db_query("SELECT * FROM metube WHERE id = #{ id }")
   @video = @video.first
-  @embed_code = @video['url'].split("=").last
+  @embed_code = YouTubeAddy.extract_video_id(@video['url'])
   erb :show
 end
 
