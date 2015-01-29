@@ -1,82 +1,136 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require 'sqlite3'
-
+require 'active_record'
 require 'pry'
 
+ActiveRecord::Base.logger = Logger.new(STDERR) #Show SQL in the terminal
+
+# Explains to ActiveRord where to find the database.
+ActiveRecord::Base.establish_connection(
+  :adapter => 'sqlite3',
+  :database => 'butterflies.db'
+)
+
+# Include our models.
+require_relative 'butterfly'
+require_relative 'plant'
+
+# Before filter runs before any and every request.
 before do
-  @families = db_query("SELECT DISTINCT(family) FROM butterflies")
+  # The layout requires this variable to be set.
+  @families = @families = Butterfly.select(:family).uniq
 end
 
+# Ditto for the after filter.
+after do
+  # This stops the database running out of connections.
+  ActiveRecord::Base.connection.close
+end
+
+# For debugging purposes;
+get '/pry' do
+  binding.pry
+end
+
+# Homepage.
 get '/' do
   erb :home
 end
 
+# Butterflies index.
 get '/butterflies' do
-  @butterflies = db_query("SELECT * FROM butterflies")
+  @butterflies = Butterfly.all.order(:name)
   erb :index
 end
 
+# Butterflies within a single family. !!!!! where will find a group of
+# projects that match the requirement, whil find or find_by just return one project.
 get '/butterflies/family/:name' do
-  @butterflies = db_query("SELECT * FROM butterflies WHERE family='#{params[:name]}'")
-  erb :index
+  @butterflies = Butterfly.where(:family => params[:name])
+  erb :index # Same view as the index but only for a particular family.
 end
 
 get '/butterflies/new' do
   erb :new
 end
 
+# CREATE a new butterfly
 post '/butterflies' do
-  query = "INSERT INTO butterflies (name, family, image)
-           VALUES ('#{params["name"]}', '#{params["family"]}',
-                   '#{params["image"]}')"
+  # Instantiate a new butterfly in memory, set its attributes
+  # and save (persist) in to the database.
+  butterfly = Butterfly.new
+  butterfly.name = params[:name]
+  butterfly.family = params[:family]
+  butterfly.image = params[:image]
 
-  db_query(query)
+  butterfly.save
 
-  redirect to('/butterflies')
+  redirect to("/butterflies/#{butterfly.id}") # Show the user the new butterfly.
 end
 
+# SHOW a butterfly
 get '/butterflies/:id' do
-  id = params[:id]
-
-  @butterfly = db_query("SELECT * FROM butterflies WHERE id = #{ id }")
-  @butterfly = @butterfly.first
-
+  @butterfly = Butterfly.find params[:id] # The ID is in the URL
   erb :show
 end
 
+# This is naughty, I was lazy, sorry: Post would be better.
 get '/butterflies/:id/delete' do
-  id = params[:id]
-
-  db_query("DELETE FROM butterflies WHERE id = #{ id }")
-
-  redirect to('/butterflies')
+  butterfly = Butterfly.find params[:id] # The ID is in the URL
+  butterfly.destroy # Delete the butterfly from the database.
+  redirect to('/butterflies') # Return the user to the index.
 end
 
 get '/butterflies/:id/edit' do
-  id = params[:id]
-
-  @butterfly = db_query("SELECT * FROM butterflies WHERE id = #{ id }").first
-
+  @butterfly = Butterfly.find params[:id]
   erb :edit
 end
 
+# UPDATE butterfly.
 post '/butterflies/:id' do
-  id = params[:id]
-
-  query = "UPDATE butterflies SET name='#{params["name"]}', family='#{params["family"]}', image='#{params["image"]}' WHERE id = #{id}"
-
-  db_query(query)
-
-  redirect to('/butterflies/' + id)
+  # Retrieve an existing butterfly, update its attributes and save (persist)
+  # to the database.
+  butterfly = Butterfly.find params[:id]
+  butterfly.name = params[:name]
+  butterfly.family = params[:family]
+  butterfly.image = params[:image]
+  butterfly.save
+  redirect to('/butterflies/#{butterfly.id}')
 end
 
-def db_query(sql)
-  db = SQLite3::Database.new "butterflies.db"
-  db.results_as_hash = true
+get '/plants' do
+  @plants = Plant.all.order(:name)
+  erb :plants_index
+end
 
-  result = db.execute sql
+get '/plants/new' do
+  erb :plants_new
+end
 
-  db.close
-  result
+post '/plants' do
+  Plant.create :name => params[:name], :image => params[:image]
+  redirect to ('/plants')
+end
+
+get '/plants/:id' do
+  @plant = Plant.find params[:id]
+  erb :plants_show
+end
+
+get '/plants/:id/delete' do
+  plant = Plant.find params[:id]
+  plant.destroy
+  redirect to ('/plants')
+end
+
+get '/plants/:id/edit' do
+  @plant = Plant.find params[:id]
+  erb :plants_edit
+end
+
+post '/plants/:id' do
+  plant = Plant.find params[:id]
+  plant.update :name => params[:name], :image => params[:image]
+  redirect to ("/plants/#{plant.id}")
 end
